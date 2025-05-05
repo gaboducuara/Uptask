@@ -13,7 +13,7 @@ export class ProjectController {
   static getProjectById = async (req: Request, res: Response) => {
     try {
       const { id } = req.params
-      const project = await Project.findById(id)
+      const project = await Project.findById(id).populate('tasks') /*En este caso populate sirve para traer Todas las tareas de los proyectos.*/
       res.status(200).json({ status: 'success', message: 'Proyecto obtenido', data: project })
     } catch (e) {
       const error = new Error('Error al obtener el proyecto')
@@ -22,14 +22,14 @@ export class ProjectController {
     }
   }
   static createProject = async (req: Request, res: Response) => {
-    const project = new Project(req.body)
     try {
-      await project.save()
+      const project = new Project(req.body)
       if (!project) {
         const error = new Error('Error al crear el proyecto')
         res.status(404).json({ status: 'error', message: error.message })
         return
       }
+      await project.save()
       res.send('Proyecto creado correctamente')
     } catch (e) {
       const error = new Error('Error al crear el proyecto')
@@ -39,13 +39,15 @@ export class ProjectController {
   static updateProject = async (req: Request, res: Response) => {
     try {
       const { id } = req.params
-      const project = await Project.findByIdAndUpdate(id, req.body, { new: true })
-
+      const project = await Project.findById(id)
       if (!project) {
         const error = new Error('Error al actualizar el proyecto')
         res.status(404).json({ status: 'error', message: error.message })
         return
       }
+      project.projectName = req.body.projectName
+      project.clientName = req.body.clientName
+      project.description = req.body.description
       await project.save()
       res.send('Proyecto Actualizado')
     } catch (e) {

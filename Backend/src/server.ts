@@ -10,7 +10,6 @@ connectDB()
 const app: express.Application = express();
 
 app.use(express.json())
-
-//Routes
+/*Routes*/
 app.use('/api/project', projectRoutes )
 export default app;
