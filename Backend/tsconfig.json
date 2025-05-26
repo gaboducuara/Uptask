@@ -2,6 +2,7 @@
 "compilerOptions": {
   "outDir": "./dist",
   "rootDir": "./src",
+  "types": ["jest", "node"],
   "lib": [
     "esnext"
   ],
@@ -9,11 +10,11 @@
   "moduleResolution": "NodeNext",
   "module": "NodeNext",
   "strict": false,
+  "isolatedModules": true,
   "sourceMap": true,
   "esModuleInterop": true,
   "declaration": true
 },
-"include": [
-  "src/**/*.ts"
-]
+"include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
+  "exclude": ["node_modules", "dist"]
 }

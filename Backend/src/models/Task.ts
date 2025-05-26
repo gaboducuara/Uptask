@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document, Types } from 'mongoose'
 
-//Objeto para el estado de las tareas
 const taskStatus = {
   PENDING: 'pending',
   ON_HOLD: 'onHold',
@@ -9,7 +8,6 @@ const taskStatus = {
   COMPLETED: 'completed'
 } as const
 
-// Forma para que el taskStatus solo reciba la constante de 'completed','underReview','pending', 'onHold', 'inProgress',
 export type taskStatus = typeof taskStatus[keyof typeof taskStatus]
 export interface ITask extends Document {
   name: string

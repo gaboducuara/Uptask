@@ -3,71 +3,48 @@ import Project from '../models/Project'
 export class ProjectController {
   static getAllProject = async (req: Request, res: Response) => {
     try {
-      const projects = await Project.find({})
-      res.status(200).json({ status: 'success', message: 'Proyectos obtenidos', data: projects })
+      const projects = await Project.find({});
+      if(projects.length === 0) {
+        res.status(404).json({ error: 'No existen proyectos actualmente' })
+      return
+      }
+      res.status(200).json({message: 'Proyectos obtenidos', data: projects});
+      return
     } catch (e) {
-      const error = new Error('Error al obtener los proyectos')
-      res.status(500).json({ status: 'error', message: error.message })
-    }
-  }
-  static getProjectById = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params
-      const project = await Project.findById(id).populate('tasks') /*En este caso populate sirve para traer Todas las tareas de los proyectos.*/
-      res.status(200).json({ status: 'success', message: 'Proyecto obtenido', data: project })
-    } catch (e) {
-      const error = new Error('Error al obtener el proyecto')
-      res.status(500).json({ status: 'error', message: error.message })
+      res.status(500).json({ error: 'error al traer proyectos.' })
       return
     }
   }
+  static getProjectById = async (req: Request, res: Response) => {
+      const project = await Project.findById(req.params.projectId).populate('tasks') /*En este caso populate sirve para traer Todas las tareas de los proyectos.*/
+      res.status(200).json({message: 'Proyecto obtenido', data: project })
+      return
+  }
   static createProject = async (req: Request, res: Response) => {
     try {
-      const project = new Project(req.body)
-      if (!project) {
-        const error = new Error('Error al crear el proyecto')
-        res.status(404).json({ status: 'error', message: error.message })
-        return
-      }
-      await project.save()
-      res.send('Proyecto creado correctamente')
+      const project = await Project.create(req.body)
+      await project.save();
+      res.status(201).json('Proyecto creado correctamente');
     } catch (e) {
-      const error = new Error('Error al crear el proyecto')
-      res.status(500).json({ status: 'error', message: error.message })
+      res.status(500).json({ error: 'Error al crear el proyecto.' })
+      return
     }
   }
   static updateProject = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params
-      const project = await Project.findById(id)
-      if (!project) {
-        const error = new Error('Error al actualizar el proyecto')
-        res.status(404).json({ status: 'error', message: error.message })
-        return
-      }
+      const { projectId } = req.params
+      const project = await Project.findById(projectId)
       project.projectName = req.body.projectName
       project.clientName = req.body.clientName
       project.description = req.body.description
       await project.save()
-      res.send('Proyecto Actualizado')
-    } catch (e) {
-      const error = new Error('Error al actualizar el proyecto')
-      res.status(500).json({ status: 'error', message: error.message })
-    }
+      res.status(200).json({ message: 'Proyecto Actualizado' })
+      return
   }
   static deleteProject = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params
-      const project = await Project.findById(id).deleteOne()
-      if (!project) {
-        const error = new Error('Error al eliminar proyecto')
-        res.status(404).json({ status: 'error', message: error.message })
-        return
-      }
-      res.send('Proyecto eliminado')
-    } catch (e) {
-      const error = new Error('Error al eliminar proyecto')
-      res.status(500).json({ status: 'error', message: error.message })
-    }
+      const { projectId } = req.params
+      const project = await Project.findById(projectId)
+      await project.deleteOne()
+      res.status(200).json({ message: 'Proyecto eliminado'})
+      return
   }
 }
